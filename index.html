@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Générateur de guerre — Sengoku no Jidai</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&family=Inria+Sans:wght@400;700&family=Noto+Serif+JP&display=swap" rel="stylesheet">
+<!-- Ton CSS réel : l'aperçu est donc identique au forum -->
+<link rel="stylesheet" href="https://dl.dropbox.com/scl/fi/m2kfoguztr4ipc30tqjj5/reglement_snj-1.css?rlkey=upvuiuuzd051s3sgwswpbl2s9&st=4d0y1jba&raw=1">
+<style>
+:root{--bg:#0a0908;--p:#110f0d;--p2:#17140f;--l:#2a251d;--t:#e8dfc9;--m:#9c9278;--g:#c9a558;--r:#c4503f}
+*{box-sizing:border-box}html{scrollbar-color:#3a3228 #0e0c09;scrollbar-width:thin}
+body{margin:0;color:var(--t);font:15px/1.5 'Inria Sans',system-ui,sans-serif;background:radial-gradient(ellipse 80% 40% at 50% 0,rgba(201,165,88,.08),transparent 70%),#0a0908;background-attachment:fixed}
+.app{max-width:1340px;margin:0 auto;padding:20px 14px 60px}
+.top{text-align:center;margin-bottom:18px}.kj{font:13px 'Noto Serif JP',serif;letter-spacing:10px;color:#6e664f}
+h1{margin:8px 0 4px;font:700 26px 'Cinzel',serif;letter-spacing:.2em;text-transform:uppercase;background:linear-gradient(#f0d48a,#b08d3e);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin:0;color:var(--m);font:italic 16px 'IM Fell English',serif}
+.bar2{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 800px;gap:18px;align-items:start}
+.sec{background:linear-gradient(#131009,#0f0d0a);border:1px solid var(--l);border-left:3px solid var(--g);border-radius:4px;margin-bottom:16px;box-shadow:0 8px 28px rgba(0,0,0,.35)}
+.sec>h2,.sec>summary{margin:0;padding:11px 16px;background:linear-gradient(90deg,rgba(201,165,88,.11),transparent 70%),var(--p2);border-bottom:1px solid var(--l);font:600 12px 'Cinzel',serif;letter-spacing:.24em;text-transform:uppercase;color:var(--g);cursor:pointer;list-style:none}
+.b{padding:16px;display:flex;flex-direction:column;gap:12px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+label.f{display:flex;flex-direction:column;gap:4px;font:600 9.5px 'Cinzel',serif;letter-spacing:.2em;text-transform:uppercase;color:var(--m)}
+input,select,textarea{width:100%;font:inherit;color:var(--t);background:#0e0c09;border:1px solid var(--l);border-radius:4px;padding:8px 10px;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--g);box-shadow:0 0 0 3px rgba(201,165,88,.13)}
+textarea{resize:vertical;min-height:70px}input[type=color]{height:38px;padding:2px;cursor:pointer}
+.btn{font:600 11px 'Cinzel',serif;letter-spacing:.16em;text-transform:uppercase;padding:9px 16px;border:1px solid #8d6f2c;border-radius:4px;cursor:pointer;color:#1a1408;background:linear-gradient(#d8b866,#b08d3e);transition:transform .15s,box-shadow .2s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(201,165,88,.25)}.btn.o{background:none;color:var(--g);border-color:var(--l)}.btn.o:hover{background:rgba(201,165,88,.07);box-shadow:none}
+.x{background:none;border:1px solid var(--l);color:var(--m);cursor:pointer;border-radius:4px;padding:6px 10px}.x:hover{color:var(--r);border-color:var(--r)}
+.card{border:1px solid #221d15;border-left:3px solid var(--g);border-radius:4px;background:#0c0a08;padding:12px;display:flex;flex-direction:column;gap:10px}
+.ch{display:flex;align-items:center;gap:8px}.ch b{flex:1;font:600 12px 'Cinzel',serif;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lh{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-bottom:6px;border-bottom:1px solid var(--l)}.lh b{font:600 12px 'Cinzel',serif;letter-spacing:.2em;text-transform:uppercase}
+.tools{display:flex;gap:8px;flex-wrap:wrap}.hint{font-size:12.5px;color:var(--m);margin:0}
+.side{position:sticky;top:12px;background:var(--p);border:1px solid var(--l);border-top:2px solid var(--g);border-radius:4px;max-height:calc(100vh - 24px);display:flex;flex-direction:column;box-shadow:0 10px 32px rgba(0,0,0,.45)}
+.tabs{display:flex;border-bottom:1px solid var(--l)}.tabs button{flex:1;padding:11px;background:var(--p2);border:0;color:var(--m);font:600 10px 'Cinzel',serif;letter-spacing:.2em;text-transform:uppercase;cursor:pointer}
+.tabs button.on{color:var(--g);box-shadow:inset 0 -2px var(--g);background:var(--p)}
+.view{overflow:auto;padding:10px;flex:1;min-height:240px}.view[hidden]{display:none}
+.pvw{background:#0a0908;overflow:hidden;padding:8px;border-radius:3px}#pv{width:780px;margin:0 auto}
+#code{min-height:420px;font:12.5px/1.5 ui-monospace,Consolas,monospace;white-space:pre}
+.acts{padding:12px;border-top:1px solid var(--l)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#17140f;border:1px solid var(--g);padding:10px 20px;border-radius:4px;font:600 11px 'Cinzel',serif;letter-spacing:.18em;text-transform:uppercase;opacity:0;pointer-events:none;transition:.3s;z-index:99}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1250px){.cols{grid-template-columns:1fr}.side{position:static;max-height:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><div class="kj">戦争</div><h1>Générateur de guerre</h1><p class="sub">Remplis les champs : l'aperçu et le code se mettent à jour tout seuls. Tout est sauvegardé dans ton navigateur.</p>
+    <div class="bar2"><button class="btn o" id="im">Importer un code existant</button><button class="btn o" id="sv">Sauvegarde (données)</button><button class="btn o" id="rs">Tout effacer</button></div></header>
+  <div class="sec" id="imbox" hidden><h2>Importer un code de guerre existant</h2><div class="b">
+    <p class="hint">Colle ici le code complet d'une guerre faite avec ce générateur (il faut que la toute dernière ligne cachée du code, celle qui commence par &lt;!--WAR:, soit bien présente). Tu pourras ensuite tout modifier.</p>
+    <textarea id="imta" style="min-height:140px" placeholder="Colle ici le code complet de la fiche de guerre…"></textarea>
+    <p class="hint" id="imerr" style="color:var(--r)" hidden>Code non reconnu : il doit venir de ce générateur et contenir la ligne &lt;!--WAR:…--&gt; à la fin.</p>
+    <div class="tools"><button class="btn" id="imgo">Charger ce code</button><button class="btn o" id="imno">Annuler</button></div></div></div>
+  <div class="sec" id="svbox" hidden><h2>Sauvegarde des données</h2><div class="b">
+    <p class="hint">« Copier » met toutes tes données dans le presse-papiers (garde-les dans un fichier texte). Pour les restaurer, colle-les ici puis « Charger ».</p>
+    <textarea id="dt" style="min-height:110px"></textarea>
+    <div class="tools"><button class="btn" id="dtcp">Copier mes données</button><button class="btn o" id="dtld">Charger ces données</button></div></div></div>
+  <div class="cols">
+    <div class="main" id="ed"></div>
+    <aside class="side"><div class="tabs"><button class="on" data-v="pv">Aperçu</button><button data-v="cd">Code</button></div>
+      <div class="view" id="v-pv"><div class="pvw"><div id="pv"></div></div></div>
+      <div class="view" id="v-cd" hidden><textarea id="code" readonly></textarea></div>
+      <div class="acts"><button class="btn" id="cp" style="width:100%">Copier le code</button></div></aside>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+const KEY='snj_war_gen',$=(s,r=document)=>r.querySelector(s);
+const CSS='https://dl.dropbox.com/scl/fi/m2kfoguztr4ipc30tqjj5/reglement_snj-1.css?rlkey=upvuiuuzd051s3sgwswpbl2s9&st=4d0y1jba&raw=1';
+const OBITO='https://preview.redd.it/iyo-which-obito-fight-is-the-best-v0-mim2vof1kaeb1.jpg?width=640&crop=smart&auto=webp&s=5edca6d461bebefcca3842e148a0f9152ee63041';
+const LM='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiY7GopXlTZMODBBpzaxMwro0bUE12pNhcRJqFkWm0pg&s';
+const LK='https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Symbole_du_Clan_Kaguya.svg/500px-Symbole_du_Clan_Kaguya.svg.png';
+const E=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'),A=s=>E(s).replace(/"/g,'&quot;');
+const ST={actif:['Actif','#6fbf8e'],blesse:['Blessé','#e8812a'],hors:['Hors combat','#d64545'],capture:['Capturé','#9b6fd1'],mort:['Mort','#6b6b78']};
+const MS={cours:['En cours','#c9a558'],reussie:['Réussie','#6fbf8e'],echouee:['Échouée','#d64545']};
+const LISTS={pj:{t:'PJ',k:'prof'},pnj:{t:'PNJ',k:'prof'},merc:{t:'Mercenaires',k:'prof'},proj:{t:'Projets de guerre',k:'proj'},miss:{t:'Missions en cours',k:'miss'}};
+const FIELDS={
+ prof:[['n','Nom','text'],['img','Image carrée (lien)','text'],['rang','Rang','text','ex : Jônin'],['role','Rôle / spécialité','text'],['pv','PV','text','ex : 80/100'],['chakra','Chakra','text','ex : 50/100'],['st','Statut','sel',ST],['d','Notes (optionnel)','area']],
+ proj:[['n','Nom du projet','text'],['cur','Points investis','num'],['max','Points requis','num'],['d','Effet / description','area']],
+ miss:[['n','Nom de la mission','text'],['st','Statut','sel',MS],['fin','Fin prévue','text'],['d','Description','area']],
+ rnd:[['t','Titre du round','text'],['d','Événements (une ligne = une puce)','area']]};
+const NEW={prof:()=>({n:'',img:'',rang:'',role:'',pv:'',chakra:'',st:'actif',d:''}),proj:()=>({n:'',cur:0,max:5,d:''}),miss:()=>({n:'',st:'cours',fin:'',d:''})};
+const camp=(name,logo,color,pv)=>({name,logo,color,pv,pertes:0,terr:0,pj:[],pnj:[],merc:[],proj:[],miss:[]});
+const DEF=()=>({banner:OBITO,kj:'戦争',title:'',sub:'Round 1 — En cours',foot:'',css:CSS,camps:[camp('Mizu no Kuni',LM,'#45c4d6',13),camp('Clan Kaguya',LK,'#d64545',10)],rounds:[{t:'Round 1',d:''}]});
+let S=DEF();try{const o=JSON.parse(localStorage.getItem(KEY));if(o&&o.camps&&o.camps.length==2)S=Object.assign(DEF(),o)}catch(e){}
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),1900)};
+const rgb=h=>{h=(h||'#000000').replace('#','');return [0,2,4].map(i=>parseInt(h.substr(i,2),16)||0).join(', ')};
+
+/* ---------- génération du code (ton CSS + astuce <!-- --> anti <br>) ---------- */
+const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))),dec=t=>JSON.parse(decodeURIComponent(escape(atob(t))));
+const fm=t=>E(t).replace(/\*\*([\s\S]+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
+const MUT='font-size:12px;color:var(--sg-paper-300);font-style:italic',DSC='font-size:13px;color:var(--sg-paper-200)';
+const emp=`<span style="${MUT}">Aucun</span>`;
+const big=(v,c)=>`<span style="font-family:'Cinzel',serif;font-size:20px;color:${c}">${v}</span>`;
+const tag=(l,c)=>`<span class="tpc-tag" style="margin:0 0 0 8px;font-size:9px;color:${c}">${l}</span>`;
+const gauge=(l,v,col)=>{v=(v||'').trim();if(!v)return '';const m=v.match(/^(\d+(?:[.,]\d+)?)\s*\/\s*(\d+(?:[.,]\d+)?)$/),pc=m?Math.max(0,Math.min(100,Math.round(parseFloat(m[1].replace(',','.'))/Math.max(parseFloat(m[2].replace(',','.')),1)*100))):null;
+ return `<div style="display:flex;align-items:center;gap:6px;margin-top:4px"><span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--sg-paper-300);width:44px;flex:0 0 44px">${l}</span>${pc===null?'':`<div style="flex:1;height:5px;background:var(--sg-ink-800)"><div style="width:${pc}%;height:100%;background:${col}"></div></div>`}<span style="font-size:11px;color:var(--sg-paper-200);white-space:nowrap">${E(v)}</span></div>`};
+const prof=(o,c)=>{const [l,col]=ST[o.st]||ST.actif,im=o.img.trim()?`<img src="${A(o.img.trim())}" alt="${A(o.n)}" referrerpolicy="no-referrer" style="display:block;width:100%;height:100%;object-fit:cover">`:'',rg=o.rang?`<span style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;font-style:normal;color:var(--sg-gold-soft)">${E(o.rang)}</span>`:'';
+ return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="flex:0 0 58px;width:58px;height:58px;overflow:hidden;background:#0a0908;border:1px solid ${c.color}">${im}</div><div style="min-width:0;flex:1"><div class="tpc-name">${E(o.n)||'Sans nom'}${tag(l,col)}</div>${rg||o.role?`<div style="${MUT}">${rg}${rg&&o.role?' · ':''}${E(o.role||'')}</div>`:''}${gauge('PV',o.pv,'#4caf7a')}${gauge('Chakra',o.chakra,'#4a90d9')}${o.d?`<div style="${DSC}">${fm(o.d)}</div>`:''}</div></div>`};
+const proj=(o,c)=>{const p=Math.min(100,Math.round((+o.cur||0)/Math.max(+o.max||0,1)*100));
+ return `<div style="margin-bottom:12px"><div class="tpc-name">${E(o.n)||'Sans nom'}</div><div style="display:flex;align-items:center;gap:8px;margin-top:5px"><div style="flex:1;height:5px;background:var(--sg-ink-800)"><div style="width:${p}%;height:100%;background:${c.color}"></div></div><span style="font-size:11px;color:var(--sg-paper-300);white-space:nowrap">${+o.cur||0} / ${+o.max||0} PP</span></div>${o.d?`<div style="${DSC}">${fm(o.d)}</div>`:''}</div>`};
+const miss=(o,c)=>{const [l,col]=MS[o.st]||MS.cours;
+ return `<div style="margin-bottom:12px;padding-left:10px;border-left:2px solid ${c.color}"><div class="tpc-name">${E(o.n)||'Sans nom'}${tag(l,col)}</div>${o.d?`<div style="${DSC}">${fm(o.d)}</div>`:''}${o.fin?`<div style="${MUT}">Fin prévue : ${E(o.fin)}</div>`:''}</div>`};
+const rnd=r=>{const li=r.d.split('\n').filter(x=>x.trim()).map(x=>`<div class="liste_item"><div class="liste_puce"></div><div>${fm(x)}</div></div>`).join('')||'<div class="liste_item"><div class="liste_puce"></div><div>À remplir</div></div>';
+ return `<div class="encadre"><div class="encadre_titre">${E(r.t)}</div><div class="liste_gen" style="font-style:normal">${li}</div></div>`};
+
+function gen(mode){const [a,b]=S.camps,mx=Math.max(+a.pv,+b.pv,1);
+ const ban=(t,k)=>`<div class="ban_id"><h4>${t}</h4><h3>${k}</h3></div>`,ls=(c,k,f)=>c[k].length?c[k].map(o=>f(o,c)).join(''):emp;
+ const tbl=rows=>`<div class="tpc-wrap" style="max-width:none;margin:20px 20px 8px"><table class="tpc-table" style="table-layout:fixed"><tr><th style="width:42%;text-align:center;color:${a.color}">${E(a.name)}</th><th style="width:16%;text-align:center">VS</th><th style="width:42%;text-align:center;color:${b.color}">${E(b.name)}</th></tr>${rows.map(([l,m,r,ce])=>`<tr><td style="${ce?'text-align:center;':''}">${l}</td><td style="text-align:center;vertical-align:middle;background:var(--sg-ink-950)"><span class="tpc-name">${m}</span></td><td style="${ce?'text-align:center;':''}">${r}</td></tr>`).join('')}</table></div>`;
+ const pvc=c=>`${big(c.pv,c.color)}<div style="height:8px;margin-top:8px;background:var(--sg-ink-800)"><div style="width:${Math.round(c.pv/mx*100)}%;height:100%;background:${c.color}"></div></div>`;
+ const blas=c=>`<div class="bc_blason" style="margin:0;width:110px;height:110px;--bc-accent:${c.color};--bc-accent-rgb:${rgb(c.color)}">${c.logo.trim()?`<img src="${A(c.logo.trim())}" alt="${A(c.name)}" referrerpolicy="no-referrer">`:''}</div>`;
+ const P=[];
+ if(mode!='pv')P.push(`<link rel="stylesheet" href="${A(S.css.replace(/&amp;/g,'&'))}">`);
+ P.push('<div class="fiche_gen bc_fiche" style="--bc-accent: #c9a558; --bc-accent-rgb: 201, 165, 88;">');
+ if(S.banner.trim())P.push(`<div style="position:relative;height:180px;overflow:hidden;background:#0a0908"><img src="${A(S.banner.trim())}" alt="" referrerpolicy="no-referrer" style="display:block;width:100%;height:100%;object-fit:cover;filter:brightness(.6)"><div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,#0e0c09)"></div></div>`);
+ P.push(`<div class="en_tete_gen" style="padding-top:10px"><div class="en-tete-kanji">${E(S.kj)}</div><div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:30px;margin-bottom:20px">${blas(a)}<span style="font-family:'Cinzel',serif;font-size:24px;color:var(--sg-gold)">VS</span>${blas(b)}</div><h2>${E((S.title||a.name+' & '+b.name).toUpperCase())}</h2><div class="bc_sous_titre">${E(S.sub)}</div><div class="sg-divider" style="margin:20px"><span class="sg-divider__line"></span><span class="sg-divider__diamond"></span><span class="sg-divider__line"></span></div></div>`);
+ P.push(ban('Rapport de forces','戦況'),tbl([[pvc(a),'Points de victoire',pvc(b),1],[big(a.pertes,a.color),'Pertes',big(b.pertes,b.color),1],[big(a.terr,a.color),'Territoires',big(b.terr,b.color),1]]));
+ P.push(ban('Combattants','兵'),tbl([['pj','PJ'],['pnj','PNJ'],['merc','Mercenaires']].map(([k,t])=>[ls(a,k,prof),t,ls(b,k,prof)])));
+ P.push(ban('Projets de guerre','策'),tbl([[ls(a,'proj',proj),'Projets',ls(b,'proj',proj)]]));
+ P.push(ban('Missions en cours','任務'),tbl([[ls(a,'miss',miss),'Missions',ls(b,'miss',miss)]]));
+ P.push(ban('Chronique de la guerre','記録'),`<div style="display:flex;flex-direction:column;gap:14px;padding:22px 25px 26px">${S.rounds.map(rnd).join('')}</div>`);
+ P.push(`<div class="pied_gen">${E(S.foot||'Sengoku no Jidai — Guerre : '+a.name+' & '+b.name)}</div>${mode=='pv'?'':'<!--WAR:'+enc(S)+'-->'}</div>`);
+ return P.join('\n').replace(/>[ \t]*\n[ \t]*</g,'><!--\n--><')}
+
+/* ---------- interface ---------- */
+const F=(pre,[k,l,ty,opt],o)=>{const p=pre?pre+'.'+k:k,v=o[k];
+ if(ty=='area')return `<label class="f">${l}<textarea data-p="${p}">${E(v)}</textarea></label>`;
+ if(ty=='sel')return `<label class="f">${l}<select data-p="${p}">${Object.entries(opt).map(([x,y])=>`<option value="${x}"${x==v?' selected':''}>${y[0]}</option>`).join('')}</select></label>`;
+ return `<label class="f">${l}<input ${ty=='text'&&opt?`placeholder="${A(opt)}" `:''}${ty=='num'?'type="number" data-n ':ty=='col'?'type="color" ':''}data-p="${p}" value="${A(v)}"></label>`};
+const item=(c,l,i,o,fs)=>{const p=c=='r'?`rounds.${i}`:`camps.${c}.${l}.${i}`,at=`data-c="${c}" data-l="${l}" data-i="${i}"`;
+ return `<div class="card"><div class="ch"><b>${E(o.n||o.t||'Nouveau')}</b><button class="x" data-a="up" ${at}>↑</button><button class="x" data-a="dn" ${at}>↓</button><button class="x" data-a="del" ${at}>✕</button></div><div class="g">${fs.map(f=>F(p,f,o)).join('')}</div></div>`};
+const campUI=(c,ci)=>`<div class="sec" style="border-left-color:${c.color}"><h2 style="color:${c.color}">${E(c.name)}</h2><div class="b"><div class="g">${[['name','Nom du camp','text'],['color','Couleur','col'],['pv','Points de victoire','num'],['pertes','Pertes','num'],['terr','Territoires','num']].map(f=>F('camps.'+ci,f,c)).join('')}</div>${F('camps.'+ci,['logo','Logo (lien)','text'],c)}`
+ +Object.entries(LISTS).map(([k,L])=>`<div class="lh"><b>${L.t} (${c[k].length})</b><button class="btn o" data-a="add" data-c="${ci}" data-l="${k}">+ Ajouter</button></div>${c[k].map((o,i)=>item(ci,k,i,o,FIELDS[L.k])).join('')}`).join('')+'</div></div>';
+function renderEd(){$('#ed').innerHTML=`<div class="sec"><h2>Général</h2><div class="b"><div class="g">${F('',['title','Titre (vide = noms des camps)','text'],S)}${F('',['sub','Sous-titre / round en cours','text'],S)}${F('',['kj','Kanji d\'en-tête','text'],S)}</div>${F('',['banner','Image de bannière (lien)','text'],S)}${F('',['foot','Pied de page (vide = automatique)','text'],S)}</div></div>`
+ +S.camps.map(campUI).join('')
+ +`<div class="sec"><h2>Chronique des rounds</h2><div class="b">${S.rounds.map((r,i)=>item('r','r',i,r,FIELDS.rnd)).join('')}<div class="tools"><button class="btn o" data-a="add" data-c="r" data-l="r">+ Ajouter un round</button></div></div></div>`
+ +`<details class="sec"><summary>Réglages avancés</summary><div class="b">${F('',['css','Lien du CSS des fiches','text'],S)}</div></details>`}
+const setP=(p,v)=>{const k=p.split('.'),l=k.pop();k.reduce((o,x)=>o[x],S)[l]=v};
+let pvT,last='';const fit=()=>{const w=$('.pvw').clientWidth-16;if(w>0)$('#pv').style.zoom=Math.max(.35,Math.min(1,w/790))};
+function pvUpd(){const h=gen('pv');if(h!==last){last=h;$('#pv').innerHTML=h}fit()}
+function upd(){$('#code').value=gen('code');clearTimeout(pvT);pvT=setTimeout(pvUpd,300);try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const render=()=>{renderEd();upd()};
+document.addEventListener('input',e=>{const t=e.target,p=t.dataset.p;if(!p)return;setP(p,t.hasAttribute('data-n')?+t.value:t.value);
+ if(/\.(n|t)$/.test(p)){const b=t.closest('.card');if(b)b.querySelector('.ch b').textContent=t.value||'Nouveau'}upd()});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const{a,c,l}=b.dataset,i=+b.dataset.i,R=c=='r'?S.rounds:(S.camps[+c]||{})[l];
+ if(a=='add')c=='r'?R.push({t:'Round '+(R.length+1),d:''}):R.push(NEW[LISTS[l].k]());
+ if(a=='del')R.splice(i,1);if(a=='up'&&i>0)R.splice(i-1,0,R.splice(i,1)[0]);if(a=='dn'&&i<R.length-1)R.splice(i+1,0,R.splice(i,1)[0]);render()});
+document.querySelectorAll('.tabs [data-v]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs [data-v]').forEach(x=>x.classList.toggle('on',x==b));$('#v-pv').hidden=b.dataset.v!='pv';$('#v-cd').hidden=b.dataset.v!='cd';if(b.dataset.v=='pv')pvUpd()});
+window.addEventListener('resize',fit);
+$('#im').onclick=()=>{$('#imbox').hidden=!$('#imbox').hidden;$('#imerr').hidden=true};
+$('#imno').onclick=()=>$('#imbox').hidden=true;
+$('#imgo').onclick=()=>{try{const m=$('#imta').value.match(/<!--\s*WAR:([A-Za-z0-9+\/=\s]+?)\s*-->/);if(!m)throw 0;const o=dec(m[1].replace(/\s+/g,''));if(!o.camps||o.camps.length!=2)throw 0;S=Object.assign(DEF(),o);last='';render();$('#imbox').hidden=true;$('#imta').value='';toast('Code importé : tu peux le modifier')}catch(e){$('#imerr').hidden=false}};
+$('#sv').onclick=()=>{$('#svbox').hidden=!$('#svbox').hidden;$('#dt').value=JSON.stringify(S)};
+$('#dtcp').onclick=async()=>{try{await navigator.clipboard.writeText($('#dt').value);toast('Données copiées')}catch(e){$('#dt').select()}};
+$('#dtld').onclick=()=>{try{const o=JSON.parse($('#dt').value);if(!o.camps||o.camps.length!=2)throw 0;S=Object.assign(DEF(),o);last='';render();$('#svbox').hidden=true;toast('Données chargées')}catch(e){toast('Données invalides')}};
+let rsT=null;$('#rs').onclick=function(){if(!rsT){this.textContent='Confirmer ?';rsT=setTimeout(()=>{this.textContent='Tout effacer';rsT=null},3000);return}clearTimeout(rsT);rsT=null;this.textContent='Tout effacer';S=DEF();last='';render()};
+$('#cp').onclick=async function(){const o=this.textContent;try{await navigator.clipboard.writeText($('#code').value);this.textContent=(toast('Code copié dans le presse-papiers'),'Copié ✓')}catch(e){this.textContent='Va dans l\'onglet Code'}setTimeout(()=>this.textContent=o,1800)};
+render();pvUpd();
+</script>
+</body>
+</html>
