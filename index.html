@@ -181,16 +181,17 @@ const LM='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiY7GopXlTZMODBB
 const LK='https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Symbole_du_Clan_Kaguya.svg/500px-Symbole_du_Clan_Kaguya.svg.png';
 const E=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'),A=s=>E(s).replace(/"/g,'&quot;');
 const ST={actif:['Actif','#6fbf8e'],blesse:['Blessé','#e8812a'],hors:['Hors combat','#d64545'],capture:['Capturé','#9b6fd1'],mort:['Mort','#6b6b78']};
+const POS={c:['Centré'],t:['Haut'],b:['Bas']};
 const RK={S:['S'],A:['A'],B:['B'],C:['C'],D:['D']};
 const MCSS='https://snj-base-de-donnees.vercel.app/css/mission_snj.css';
 const MS={libre:['Libre — à prendre','#6b8a4e'],cours:['En cours','#c9a558'],fini:['Terminée','#9aa88a'],reussie:['Réussie','#6fbf8e'],echouee:['Échouée','#d64545']};
 const LISTS={pj:{t:'PJ',k:'prof'},pnj:{t:'PNJ',k:'prof'},merc:{t:'Mercenaires',k:'prof'},proj:{t:'Projets de guerre',k:'proj'},miss:{t:'Missions en cours',k:'miss'}};
 const FIELDS={
- prof:[['n','Nom','text'],['img','Image carrée (lien)','text'],['rang','Rang','text','ex : Jônin'],['role','Rôle / spécialité','text'],['pv','PV','text','ex : 80/100'],['chakra','Chakra','text','ex : 50/100'],['st','Statut','sel',ST],['d','Notes (optionnel)','area']],
+ prof:[['n','Nom','text'],['img','Image carrée (lien)','text'],['pos','Cadrage de l\'image (haut / centré / bas)','sel',POS],['rang','Rang','text','ex : Jônin'],['role','Rôle / spécialité','text'],['pv','PV','text','ex : 80/100'],['chakra','Chakra','text','ex : 50/100'],['st','Statut','sel',ST],['d','Notes (optionnel)','area']],
  proj:[['n','Nom du projet','text'],['cur','Points investis','num'],['max','Points requis','num'],['d','Effet / description','area']],
  miss:[['n','Titre de la mission','text'],['rang','Rang','sel',RK],['who','Donneur (ex : Yumiki Aburame, Apothicaire)','text'],['st','Statut','sel',MS],['url','Lien de la mission (sujet RP)','text','https://…'],['rec','Récompense','text','ex : 10 xp + 300 Ryos + 1 PP'],['d','Texte de la mission','area'],['txt','Afficher le texte dans la fiche','chk']],
  rnd:[['t','Titre du round','text'],['d','Événements (une ligne = une puce)','area']]};
-const NEW={prof:()=>({n:'',img:'',rang:'',role:'',pv:'',chakra:'',st:'actif',d:''}),proj:()=>({n:'',cur:0,max:5,d:''}),miss:()=>({n:'',rang:'C',who:'',st:'cours',url:'',rec:'',d:'',txt:true})};
+const NEW={prof:()=>({n:'',img:'',pos:'c',rang:'',role:'',pv:'',chakra:'',st:'actif',d:''}),proj:()=>({n:'',cur:0,max:5,d:''}),miss:()=>({n:'',rang:'C',who:'',st:'cours',url:'',rec:'',d:'',txt:true})};
 const camp=(name,logo,color,pv)=>({name,logo,color,pv,pj:[],pnj:[],merc:[],proj:[],miss:[]});
 const DEF=()=>({gcss:'https://dl.dropbox.com/scl/fi/7re43lehfjfluvgolvi6w/guerre-snj.css?rlkey=v6q760fphl1i7f5hro7egmzbr&st=78gj5v5e&raw=1',mcss:MCSS,width:1100,goal:0,banner:OBITO,kj:'戦争',title:'',sub:'Round 1 — En cours',foot:'',css:CSS,camps:[camp('Mizu no Kuni',LM,'#45c4d6',13),camp('Clan Kaguya',LK,'#d64545',10)],rounds:[{t:'Round 1',d:''}]});
 let S=DEF();try{const o=JSON.parse(localStorage.getItem(KEY));if(o&&o.camps&&o.camps.length==2){S=Object.assign(DEF(),o);if(!(+S.width>960))S.width=1100}}catch(e){}
@@ -209,7 +210,7 @@ const pvt=t=>String(t||'').replace(/(^|[^A-Za-z])PP(?![A-Za-z])/g,'$1PV');
 const bar=(p,x)=>`<div class="gw_bar${x||''}"><i style="width:${p}%"></i></div>`;
 const gauge=(l,v,x)=>{v=(v||'').trim();if(!v)return '';const m=v.match(/^(\d+(?:[.,]\d+)?)\s*\/\s*(\d+(?:[.,]\d+)?)$/),pc=m?Math.max(0,Math.min(100,Math.round(parseFloat(m[1].replace(',','.'))/Math.max(parseFloat(m[2].replace(',','.')),1)*100))):null;
  return `<div class="gw_g"><span>${l}</span>${pc===null?'':bar(pc,x)}<em>${E(v)}</em></div>`};
-const prof=o=>{const k=ST[o.st]?o.st:'actif',im=(o.img||'').trim()?`<img src="${A(o.img.trim())}" referrerpolicy="no-referrer">`:`<span>${E((o.n||'?').trim().charAt(0).toUpperCase())}</span>`,g=gauge('PV',o.pv,' r')+gauge('Chakra',o.chakra,' b');
+const prof=o=>{const k=ST[o.st]?o.st:'actif',im=(o.img||'').trim()?`<img src="${A(o.img.trim())}" referrerpolicy="no-referrer"${o.pos=='t'?' style="object-position:top"':o.pos=='b'?' style="object-position:bottom"':''}>`:`<span>${E((o.n||'?').trim().charAt(0).toUpperCase())}</span>`,g=gauge('PV',o.pv,' r')+gauge('Chakra',o.chakra,' b');
  return `<div class="gw_c"><div class="gw_im">${im}</div><div class="gw_tx"><div class="gw_l1"><span class="gw_nm">${E(o.n)||'Sans nom'}</span><b class="gw_st s_${k}">${ST[k][0]}</b></div>${o.rang||o.role?`<div class="gw_l2">${o.rang?`<b class="gw_rk">${E(o.rang)}</b>`:''}<i>${E(o.role||'')}</i></div>`:''}${g?`<div class="gw_gs">${g}</div>`:''}${o.d?`<div class="gw_nt">${fm(o.d)}</div>`:''}</div></div>`};
 const proj=o=>{const p=Math.min(100,Math.round((+o.cur||0)/Math.max(+o.max||0,1)*100));
  return `<div class="gw_c2"><div class="gw_l1"><span class="gw_nm">${E(o.n)||'Sans nom'}</span><span class="gw_pp">${+o.cur||0} / ${+o.max||0} PV</span></div>${bar(p)}${o.d?`<div class="gw_nt">${fm(o.d)}</div>`:''}</div>`};
@@ -260,7 +261,7 @@ function parseWar(src){const d=new DOMParser().parseFromString(src,'text/html'),
    const a=e.querySelector('.gw_lk'),ds=e.querySelector('.dispo_miss'),sk=ds?((ds.className.match(/gw_m_(\w+)/)||[])[1]||'cours'):'cours';
    cp.miss.push({n:T(e,'.encadre_titre span'),rang:e.getAttribute('data-rang')||'C',who:T(e,'.encadre_titre i'),st:sk,url:a?a.getAttribute('href'):'',rec,d:toTxt(e.querySelector('p')),txt:!!e.querySelector('p')})});
   else cell.querySelectorAll('.gw_c').forEach(e=>{const g={};e.querySelectorAll('.gw_g').forEach(x=>g[T(x,'span')]=T(x,'em'));const sp=e.querySelector('.gw_im span'),stt=e.querySelector('.gw_st');
-   cp[k].push({n:T(e,'.gw_nm'),img:sp?'':I(e,'.gw_im'),rang:T(e,'.gw_rk'),role:T(e,'.gw_l2 i'),pv:g.PV||'',chakra:g.CHAKRA||g.Chakra||'',st:stt?mk(stt.className)||'actif':'actif',d:toTxt(e.querySelector('.gw_nt'))})})}));
+   cp[k].push({n:T(e,'.gw_nm'),img:sp?'':I(e,'.gw_im'),pos:(()=>{const x=e.querySelector('.gw_im img'),y=x?x.getAttribute('style')||'':'';return /top/.test(y)?'t':/bottom/.test(y)?'b':'c'})(),rang:T(e,'.gw_rk'),role:T(e,'.gw_l2 i'),pv:g.PV||'',chakra:g.CHAKRA||g.Chakra||'',st:stt?mk(stt.className)||'actif':'actif',d:toTxt(e.querySelector('.gw_nt'))})})}));
  o.rounds=[...f.querySelectorAll('.gw_rd')].map(e=>({t:T(e,'.encadre_titre'),d:[...e.querySelectorAll('.liste_item')].map(x=>toTxt(x.lastElementChild)).join('\n')}));
  if(!o.rounds.length)o.rounds=[{t:'Round 1',d:''}];return norm(o)}
 
