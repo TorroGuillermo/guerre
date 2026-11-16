@@ -38,7 +38,7 @@ textarea{resize:vertical;min-height:70px}input[type=color]{height:38px;padding:2
 .tabs button.on{color:var(--g);box-shadow:inset 0 -2px var(--g);background:var(--p)}
 .view{overflow:auto;padding:10px;flex:1;min-height:240px}.view[hidden]{display:none}
 .pvw{background:#0a0908;overflow:hidden;padding:8px;border-radius:3px}#pv{width:780px;margin:0 auto}
-#code{min-height:420px;font:12.5px/1.5 ui-monospace,Consolas,monospace;white-space:pre}
+#code{min-height:420px;font:12.5px/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap;word-break:break-all}
 .acts{padding:12px;border-top:1px solid var(--l)}
 #toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#17140f;border:1px solid var(--g);padding:10px 20px;border-radius:4px;font:600 11px 'Cinzel',serif;letter-spacing:.18em;text-transform:uppercase;opacity:0;pointer-events:none;transition:.3s;z-index:99}
 #toast.on{opacity:1;transform:translate(-50%,0)}
@@ -156,9 +156,9 @@ textarea{resize:vertical;min-height:70px}input[type=color]{height:38px;padding:2
   <header class="top"><div class="kj">戦争</div><h1>Générateur de guerre</h1><p class="sub">Remplis les champs : l'aperçu et le code se mettent à jour tout seuls. Tout est sauvegardé dans ton navigateur.</p>
     <div class="bar2"><button class="btn o" id="im">Importer un code existant</button><button class="btn o" id="sv">Sauvegarde (données)</button><button class="btn o" id="rs">Tout effacer</button></div></header>
   <div class="sec" id="imbox" hidden><h2>Importer un code de guerre existant</h2><div class="b">
-    <p class="hint">Colle ici le code complet d'une guerre faite avec ce générateur (il faut que la toute dernière ligne cachée du code, celle qui commence par &lt;!--WAR:, soit bien présente). Tu pourras ensuite tout modifier.</p>
+    <p class="hint">Colle ici le code complet d'une guerre faite avec ce générateur (le code complet, depuis la balise &lt;link&gt; jusqu'à la fin). Tu pourras ensuite tout modifier.</p>
     <textarea id="imta" style="min-height:140px" placeholder="Colle ici le code complet de la fiche de guerre…"></textarea>
-    <p class="hint" id="imerr" style="color:var(--r)" hidden>Code non reconnu : il doit venir de ce générateur et contenir la ligne &lt;!--WAR:…--&gt; à la fin.</p>
+    <p class="hint" id="imerr" style="color:var(--r)" hidden>Code non reconnu : il doit venir de ce générateur (la div « fiche_gen gw »).</p>
     <div class="tools"><button class="btn" id="imgo">Charger ce code</button><button class="btn o" id="imno">Annuler</button></div></div></div>
   <div class="sec" id="svbox" hidden><h2>Sauvegarde des données</h2><div class="b">
     <p class="hint">« Copier » met toutes tes données dans le presse-papiers (garde-les dans un fichier texte). Pour les restaurer, colle-les ici puis « Charger ».</p>
@@ -204,17 +204,17 @@ const slim=o=>JSON.stringify(o,(k,v)=>v===''||v===undefined||(k=='css'&&v==CSS)|
 const enc=o=>btoa(unescape(encodeURIComponent(slim(o)))),dec=t=>JSON.parse(decodeURIComponent(escape(atob(t))));
 const norm=o=>{const r=Object.assign(DEF(),o);r.camps=r.camps.map(c=>{const b=Object.assign(camp('','','#888888',0),c);Object.entries(LISTS).forEach(([k,L])=>b[k]=(c[k]||[]).map(x=>Object.assign(NEW[L.k](),x)));return b});r.rounds=(o.rounds||[]).map(x=>Object.assign({t:'',d:''},x));return r};
 const LNK=/\[([^\]\n]+)\]\((https?:\/\/[^)\s"]+|\/[^)\s"]*)\)/g;
-const fm=t=>E(t).replace(/\*\*([\s\S]+?)\*\*/g,'<b>$1</b>').replace(LNK,'<a class="gw_ln" href="$2" target="_blank" rel="noopener">$1</a>').replace(/\n/g,'<br>');
+const fm=t=>E(t).replace(/\*\*([\s\S]+?)\*\*/g,'<b>$1</b>').replace(LNK,'<a class="gw_ln" href="$2" target="_blank">$1</a>').replace(/\n/g,'<br>');
 const pvt=t=>String(t||'').replace(/(^|[^A-Za-z])PP(?![A-Za-z])/g,'$1PV');
 const bar=(p,x)=>`<div class="gw_bar${x||''}"><i style="width:${p}%"></i></div>`;
 const gauge=(l,v,x)=>{v=(v||'').trim();if(!v)return '';const m=v.match(/^(\d+(?:[.,]\d+)?)\s*\/\s*(\d+(?:[.,]\d+)?)$/),pc=m?Math.max(0,Math.min(100,Math.round(parseFloat(m[1].replace(',','.'))/Math.max(parseFloat(m[2].replace(',','.')),1)*100))):null;
  return `<div class="gw_g"><span>${l}</span>${pc===null?'':bar(pc,x)}<em>${E(v)}</em></div>`};
-const prof=o=>{const k=ST[o.st]?o.st:'actif',im=(o.img||'').trim()?`<img src="${A(o.img.trim())}" alt="${A(o.n)}" referrerpolicy="no-referrer">`:`<span>${E((o.n||'?').trim().charAt(0).toUpperCase())}</span>`,g=gauge('PV',o.pv,' r')+gauge('Chakra',o.chakra,' b');
+const prof=o=>{const k=ST[o.st]?o.st:'actif',im=(o.img||'').trim()?`<img src="${A(o.img.trim())}" referrerpolicy="no-referrer">`:`<span>${E((o.n||'?').trim().charAt(0).toUpperCase())}</span>`,g=gauge('PV',o.pv,' r')+gauge('Chakra',o.chakra,' b');
  return `<div class="gw_c"><div class="gw_im">${im}</div><div class="gw_tx"><div class="gw_l1"><span class="gw_nm">${E(o.n)||'Sans nom'}</span><b class="gw_st s_${k}">${ST[k][0]}</b></div>${o.rang||o.role?`<div class="gw_l2">${o.rang?`<b class="gw_rk">${E(o.rang)}</b>`:''}<i>${E(o.role||'')}</i></div>`:''}${g?`<div class="gw_gs">${g}</div>`:''}${o.d?`<div class="gw_nt">${fm(o.d)}</div>`:''}</div></div>`};
 const proj=o=>{const p=Math.min(100,Math.round((+o.cur||0)/Math.max(+o.max||0,1)*100));
  return `<div class="gw_c2"><div class="gw_l1"><span class="gw_nm">${E(o.n)||'Sans nom'}</span><span class="gw_pp">${+o.cur||0} / ${+o.max||0} PV</span></div>${bar(p)}${o.d?`<div class="gw_nt">${fm(o.d)}</div>`:''}</div>`};
 const miss=o=>{const k=MS[o.st]?o.st:'cours',rg=o.rang||'C',u=/^https?:\/\//i.test((o.url||'').trim())?o.url.trim():'';
- return `<div class="encadre gw_ms${['fini','reussie','echouee'].includes(k)?' gw_fin':''}" data-rang="${A(rg)}"><div class="encadre_titre"><div class="rang_miss">${E(rg)}</div><span>${E(o.n)||'Sans nom'}</span>${o.who?`<i>${E(o.who)}</i>`:''}</div>${o.txt!==false&&o.d?`<p>${fm(o.d)}</p>`:''}<div class="bas_miss"><div class="content_rec">${o.rec?`<div class="rec_miss">Récompense:</div>${E(pvt(o.rec))}`:''}</div><div class="gw_mr">${u?`<a class="gw_lk" href="${A(u)}" target="_blank" rel="noopener">Lire la mission</a>`:''}<div class="dispo_miss gw_m_${k}">${MS[k][0]}</div></div></div></div>`};
+ return `<div class="encadre gw_ms${['fini','reussie','echouee'].includes(k)?' gw_fin':''}" data-rang="${A(rg)}"><div class="encadre_titre"><div class="rang_miss">${E(rg)}</div><span>${E(o.n)||'Sans nom'}</span>${o.who?`<i>${E(o.who)}</i>`:''}</div>${o.txt!==false&&o.d?`<p>${fm(o.d)}</p>`:''}<div class="bas_miss"><div class="content_rec">${o.rec?`<div class="rec_miss">Récompense:</div>${E(pvt(o.rec))}`:''}</div><div class="gw_mr">${u?`<a class="gw_lk" href="${A(u)}" target="_blank">Lire la mission</a>`:''}<div class="dispo_miss gw_m_${k}">${MS[k][0]}</div></div></div></div>`};
 const rnd=r=>{const li=r.d.split('\n').filter(x=>x.trim()).map(x=>`<div class="liste_item"><div class="liste_puce"></div><div>${fm(x)}</div></div>`).join('')||'<div class="liste_item"><div class="liste_puce"></div><div>À remplir</div></div>';
  return `<div class="encadre gw_rd"><div class="encadre_titre">${E(r.t)}</div><div class="liste_gen">${li}</div></div>`};
 
@@ -225,10 +225,10 @@ function gen(mode){const [a,b]=S.camps,goal=+S.goal||0,W=+S.width||1100;
  heads=row(`<div class="gw_h">${E(a.name)}</div>`,`<div class="gw_h">${E(b.name)}</div>`,' gw_hd'),
  dv=t=>`<div class="gw_dv"><i></i>${t}<i></i></div>`,gp='<div class="gw_gp"></div>',
  pan=(c,x)=>`<div class="gw_pan ${x}"><div class="gw_pn">${E(c.name)}</div><div class="gw_pt">${+c.pv||0}</div><div class="gw_pl">Points de victoire</div>${goal?bar(Math.min(100,Math.round((+c.pv||0)/goal*100))):''}</div>`,
- blas=(c,x)=>`<div class="${x}"><div class="bc_blason">${c.logo.trim()?`<img src="${A(c.logo.trim())}" alt="${A(c.name)}" referrerpolicy="no-referrer">`:''}</div></div>`;
+ blas=(c,x)=>`<div class="${x}"><div class="bc_blason">${c.logo.trim()?`<img src="${A(c.logo.trim())}" referrerpolicy="no-referrer">`:''}</div></div>`;
  const P=[];
  if(mode!='pv')P.push(`<link rel="stylesheet" href="${A(S.css.replace(/&amp;/g,'&'))}">`,`<link rel="stylesheet" href="${A(S.mcss||MCSS)}">`,`<link rel="stylesheet" href="${A(S.gcss||GCSS)}">`);
- P.push(`<div class="fiche_gen bc_fiche gw" style="width:${W}px;max-width:100%;--ca:${a.color};--ca-rgb:${rgb(a.color)};--cb:${b.color};--cb-rgb:${rgb(b.color)}">`);
+ P.push(`<div class="fiche_gen bc_fiche gw" ${goal?` data-g="${goal}"`:''} style="width:${W}px;max-width:100%;--ca:${a.color};--ca-rgb:${rgb(a.color)};--cb:${b.color};--cb-rgb:${rgb(b.color)}">`);
  if(S.banner.trim())P.push(`<div class="gw_ban"><img src="${A(S.banner.trim())}" alt="" referrerpolicy="no-referrer"><i></i></div>`);
  P.push(`<div class="en_tete_gen"><div class="en-tete-kanji">${E(S.kj)}</div><div class="gw_duel">${blas(a,'gw_a')}<span class="gw_vs">VS</span>${blas(b,'gw_b')}</div><h2>${E((S.title||a.name+' & '+b.name).toUpperCase())}</h2><div class="bc_sous_titre">${E(S.sub)}</div><div class="gw_dv gw_dv0"><i></i></div></div>`);
  P.push(ban('Rapport de forces','戦況'),`<div class="gw_rf">${pan(a,'gw_a')}<div class="gw_vs2">VS</div>${pan(b,'gw_b')}</div>`);
@@ -236,8 +236,33 @@ function gen(mode){const [a,b]=S.camps,goal=+S.goal||0,W=+S.width||1100;
  P.push(ban('Projets de guerre','策'),heads,row(ls(a,'proj',proj),ls(b,'proj',proj)),gp);
  P.push(ban('Missions en cours','任務'),heads,row(ls(a,'miss',miss),ls(b,'miss',miss)),gp);
  P.push(ban('Chronique de la guerre','記録'),`<div class="gw_rds">${S.rounds.map(rnd).join('')}</div>`);
- P.push(`<div class="pied_gen">${E(S.foot||'Sengoku no Jidai — Guerre : '+a.name+' & '+b.name)}</div>${mode=='pv'||S.keep===false?'':'<!--WAR:'+enc(S)+'-->'}</div>`);
- return P.join('\n').replace(/>[ \t]*\n[ \t]*</g,'><!--\n--><')}
+ P.push(`<div class="pied_gen">${E(S.foot||'Sengoku no Jidai — Guerre : '+a.name+' & '+b.name)}</div></div>`);
+ return P.join('')}
+
+
+/* ---------- import : on relit le code HTML de la fiche ---------- */
+function toTxt(el){if(!el)return '';const c=el.cloneNode(true);c.querySelectorAll('b').forEach(x=>x.replaceWith('**'+x.textContent+'**'));c.querySelectorAll('a').forEach(x=>x.replaceWith('['+x.textContent+']('+x.getAttribute('href')+')'));c.querySelectorAll('br').forEach(x=>x.replaceWith('\n'));return c.textContent.trim()}
+function parseWar(src){const d=new DOMParser().parseFromString(src,'text/html'),f=d.querySelector('.fiche_gen.gw');if(!f)return null;
+ const T=(e,q)=>{const x=e.querySelector(q);return x?x.textContent.trim():''},st=f.getAttribute('style')||'',col=k=>{const m=st.match(new RegExp('--'+k+':\\s*(#[0-9a-f]{6})','i'));return m?m[1]:'#888888'},
+ o=DEF(),I=(e,q)=>{const x=e.querySelector(q+' img');return x?x.getAttribute('src'):''},mk=k=>(k.match(/s_(\w+)/)||[])[1];
+ const lk=[...src.matchAll(/<link[^>]*href="([^"]+)"/gi)].map(m=>m[1].replace(/&amp;/g,'&'));
+ lk.forEach(u=>{if(/mission_snj/.test(u))o.mcss=u;else if(/guerre/.test(u))o.gcss=u;else if(/reglement/.test(u))o.css=u});
+ const w=(st.match(/(?:^|;)\s*width:\s*(\d+)px/)||[])[1];if(w)o.width=+w;o.goal=+(f.getAttribute('data-g')||0);
+ o.banner=I(f,'.gw_ban');o.kj=T(f,'.en-tete-kanji')||o.kj;o.sub=T(f,'.bc_sous_titre');
+ const pans=[...f.querySelectorAll('.gw_pan')],blas=[f.querySelector('.gw_duel .gw_a'),f.querySelector('.gw_duel .gw_b')];
+ o.camps=[0,1].map(i=>{const c=camp(T(pans[i],'.gw_pn'),I(blas[i],'.bc_blason'),col(i?'cb':'ca'),+T(pans[i],'.gw_pt')||0);return c});
+ const h2=T(f,'.en_tete_gen h2'),auto=(o.camps[0].name+' & '+o.camps[1].name).toUpperCase();o.title=h2===auto?'':h2;
+ const ft=T(f,'.pied_gen');o.foot=ft==='Sengoku no Jidai — Guerre : '+o.camps[0].name+' & '+o.camps[1].name?'':ft;
+ const rows=[...f.querySelectorAll('.gw_row:not(.gw_hd)')],keys=['pj','pnj','merc','proj','miss'];
+ rows.slice(0,5).forEach((r,ri)=>[0,1].forEach(ci=>{const cell=r.children[ci?2:0],k=keys[ri],cp=o.camps[ci];
+  if(k=='proj')cell.querySelectorAll('.gw_c2').forEach(e=>{const m=T(e,'.gw_pp').match(/(\d+)\s*\/\s*(\d+)/)||[];cp.proj.push(Object.assign(NEW.proj(),{n:T(e,'.gw_nm'),cur:+m[1]||0,max:+m[2]||0,d:toTxt(e.querySelector('.gw_nt'))}))});
+  else if(k=='miss')cell.querySelectorAll('.gw_ms').forEach(e=>{const rc=e.querySelector('.content_rec');let rec='';if(rc){const q=rc.cloneNode(true),r0=q.querySelector('.rec_miss');if(r0)r0.remove();rec=q.textContent.trim()}
+   const a=e.querySelector('.gw_lk'),ds=e.querySelector('.dispo_miss'),sk=ds?((ds.className.match(/gw_m_(\w+)/)||[])[1]||'cours'):'cours';
+   cp.miss.push({n:T(e,'.encadre_titre span'),rang:e.getAttribute('data-rang')||'C',who:T(e,'.encadre_titre i'),st:sk,url:a?a.getAttribute('href'):'',rec,d:toTxt(e.querySelector('p')),txt:!!e.querySelector('p')})});
+  else cell.querySelectorAll('.gw_c').forEach(e=>{const g={};e.querySelectorAll('.gw_g').forEach(x=>g[T(x,'span')]=T(x,'em'));const sp=e.querySelector('.gw_im span'),stt=e.querySelector('.gw_st');
+   cp[k].push({n:T(e,'.gw_nm'),img:sp?'':I(e,'.gw_im'),rang:T(e,'.gw_rk'),role:T(e,'.gw_l2 i'),pv:g.PV||'',chakra:g.CHAKRA||g.Chakra||'',st:stt?mk(stt.className)||'actif':'actif',d:toTxt(e.querySelector('.gw_nt'))})})}));
+ o.rounds=[...f.querySelectorAll('.gw_rd')].map(e=>({t:T(e,'.encadre_titre'),d:[...e.querySelectorAll('.liste_item')].map(x=>toTxt(x.lastElementChild)).join('\n')}));
+ if(!o.rounds.length)o.rounds=[{t:'Round 1',d:''}];return norm(o)}
 
 /* ---------- interface ---------- */
 const F=(pre,[k,l,ty,opt],o)=>{const p=pre?pre+'.'+k:k,v=o[k];
@@ -250,7 +275,7 @@ const item=(c,l,i,o,fs)=>{const p=c=='r'?`rounds.${i}`:`camps.${c}.${l}.${i}`,at
  return `<div class="card"><div class="ch"><b>${E(o.n||o.t||'Nouveau')}</b>${l=='miss'?`<button class="x" data-a="mv" title="Assigner à l'autre camp" ${at}>⇄</button>`:''}<button class="x" data-a="dup" title="Dupliquer" ${at}>⧉</button><button class="x" data-a="up" ${at}>↑</button><button class="x" data-a="dn" ${at}>↓</button><button class="x" data-a="del" ${at}>✕</button></div><div class="g">${fs.map(f=>F(p,f,o)).join('')}</div>${c=='r'?lnkUI(i):''}</div>`};
 const campUI=(c,ci)=>`<div class="sec" style="border-left-color:${c.color}"><h2 style="color:${c.color}">${E(c.name)}</h2><div class="b"><div class="g">${[['name','Nom du camp','text'],['color','Couleur','col'],['pv','Points de victoire','num']].map(f=>F('camps.'+ci,f,c)).join('')}</div>${F('camps.'+ci,['logo','Logo (lien)','text'],c)}`
  +Object.entries(LISTS).map(([k,L])=>`<div class="lh"><b>${L.t} (${c[k].length})</b><span class="tools">${k=='miss'?`<button class="btn o" data-a="mtog" data-c="${ci}" data-l="miss">Importer un code</button>`:''}<button class="btn o" data-a="add" data-c="${ci}" data-l="${k}">+ Ajouter</button></span></div>${k=='miss'?`<div id="mimp${ci}" class="card" hidden><p class="hint">Colle le code d'une ou plusieurs missions (les blocs « encadre »). Chaque mission trouvée est ajoutée à ce camp avec son rang, son titre, son donneur, son texte et sa récompense.</p><textarea id="mimpta${ci}" style="min-height:120px"></textarea><div class="tools"><button class="btn" data-a="mimp" data-c="${ci}" data-l="miss">Ajouter ces missions</button></div></div>`:''}${c[k].map((o,i)=>item(ci,k,i,o,FIELDS[L.k])).join('')}`).join('')+'</div></div>';
-function renderEd(){$('#ed').innerHTML=`<div class="sec"><h2>Général</h2><div class="b"><div class="g">${F('',['title','Titre (vide = noms des camps)','text'],S)}${F('',['sub','Sous-titre / round en cours','text'],S)}${F('',['kj','Kanji d\'en-tête','text'],S)}${F('',['width','Largeur de la fiche (px)','num'],S)}${F('',['goal','Objectif de points (0 = pas de barre)','num'],S)}</div>${F('',['keep','Inclure dans le code les données de réimport (cachées). Décoche pour un code plus léger : tu ne pourras plus le réimporter.','chk'],S)}${F('',['banner','Image de bannière (lien)','text'],S)}${F('',['foot','Pied de page (vide = automatique)','text'],S)}</div></div>`
+function renderEd(){$('#ed').innerHTML=`<div class="sec"><h2>Général</h2><div class="b"><div class="g">${F('',['title','Titre (vide = noms des camps)','text'],S)}${F('',['sub','Sous-titre / round en cours','text'],S)}${F('',['kj','Kanji d\'en-tête','text'],S)}${F('',['width','Largeur de la fiche (px)','num'],S)}${F('',['goal','Objectif de points (0 = pas de barre)','num'],S)}</div>${F('',['banner','Image de bannière (lien)','text'],S)}${F('',['foot','Pied de page (vide = automatique)','text'],S)}</div></div>`
  +S.camps.map(campUI).join('')
  +`<div class="sec"><h2>Chronique des rounds</h2><div class="b"><p class="hint">Lier un sujet RP à un mot : sélectionne le mot dans le texte, colle le lien du sujet, clique sur « Lier le mot ». Tu peux aussi écrire directement [mot](https://lien) dans n'importe quel texte.</p>${S.rounds.map((r,i)=>item('r','r',i,r,FIELDS.rnd)).join('')}<div class="tools"><button class="btn o" data-a="add" data-c="r" data-l="r">+ Ajouter un round</button></div></div></div>`
  +`<details class="sec"><summary>Réglages avancés</summary><div class="b">${F('',['css','Lien du CSS des fiches','text'],S)}${F('',['mcss','Lien du CSS des missions','text'],S)}${F('',['gcss','Lien du CSS de la guerre (guerre_snj.css)','text'],S)}</div></details>`}
@@ -279,7 +304,7 @@ document.querySelectorAll('.tabs [data-v]').forEach(b=>b.onclick=()=>{document.q
 window.addEventListener('resize',fit);
 $('#im').onclick=()=>{$('#imbox').hidden=!$('#imbox').hidden;$('#imerr').hidden=true};
 $('#imno').onclick=()=>$('#imbox').hidden=true;
-$('#imgo').onclick=()=>{try{const m=$('#imta').value.match(/<!--\s*WAR:([A-Za-z0-9+\/=\s]+?)\s*-->/);if(!m)throw 0;const o=dec(m[1].replace(/\s+/g,''));if(!o.camps||o.camps.length!=2)throw 0;S=norm(o);last='';render();$('#imbox').hidden=true;$('#imta').value='';toast('Code importé : tu peux le modifier')}catch(e){$('#imerr').hidden=false}};
+$('#imgo').onclick=()=>{try{const v=$('#imta').value,m=v.match(/<!--\s*WAR:([A-Za-z0-9+\/=\s]+?)\s*-->/);let n=null;if(m){try{n=norm(dec(m[1].replace(/\s+/g,'')))}catch(e){}}if(!n)n=parseWar(v);if(!n||n.camps.length!=2)throw 0;S=n;last='';render();$('#imbox').hidden=true;$('#imta').value='';toast('Code importé : tu peux le modifier')}catch(e){$('#imerr').hidden=false}};
 $('#sv').onclick=()=>{$('#svbox').hidden=!$('#svbox').hidden;$('#dt').value=JSON.stringify(S)};
 $('#dtcp').onclick=async()=>{try{await navigator.clipboard.writeText($('#dt').value);toast('Données copiées')}catch(e){$('#dt').select()}};
 $('#dtld').onclick=()=>{try{const o=JSON.parse($('#dt').value);if(!o.camps||o.camps.length!=2)throw 0;S=norm(o);last='';render();$('#svbox').hidden=true;toast('Données chargées')}catch(e){toast('Données invalides')}};
