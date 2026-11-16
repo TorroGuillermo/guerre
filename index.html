@@ -77,7 +77,7 @@ const E=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g
 const ST={actif:['Actif','#6fbf8e'],blesse:['Blessé','#e8812a'],hors:['Hors combat','#d64545'],capture:['Capturé','#9b6fd1'],mort:['Mort','#6b6b78']};
 const RK={S:['S'],A:['A'],B:['B'],C:['C'],D:['D']};
 const MCSS='https://snj-base-de-donnees.vercel.app/css/mission_snj.css';
-const MS={cours:['En cours','#c9a558'],fini:['Terminée','#9aa88a'],reussie:['Réussie','#6fbf8e'],echouee:['Échouée','#d64545']};
+const MS={libre:['Libre — à prendre','#6b8a4e'],cours:['En cours','#c9a558'],fini:['Terminée','#9aa88a'],reussie:['Réussie','#6fbf8e'],echouee:['Échouée','#d64545']};
 const LISTS={pj:{t:'PJ',k:'prof'},pnj:{t:'PNJ',k:'prof'},merc:{t:'Mercenaires',k:'prof'},proj:{t:'Projets de guerre',k:'proj'},miss:{t:'Missions en cours',k:'miss'}};
 const FIELDS={
  prof:[['n','Nom','text'],['img','Image carrée (lien)','text'],['rang','Rang','text','ex : Jônin'],['role','Rôle / spécialité','text'],['pv','PV','text','ex : 80/100'],['chakra','Chakra','text','ex : 50/100'],['st','Statut','sel',ST],['d','Notes (optionnel)','area']],
@@ -86,8 +86,8 @@ const FIELDS={
  rnd:[['t','Titre du round','text'],['d','Événements (une ligne = une puce)','area']]};
 const NEW={prof:()=>({n:'',img:'',rang:'',role:'',pv:'',chakra:'',st:'actif',d:''}),proj:()=>({n:'',cur:0,max:5,d:''}),miss:()=>({n:'',rang:'C',who:'',st:'cours',url:'',rec:'',d:'',txt:true})};
 const camp=(name,logo,color,pv)=>({name,logo,color,pv,pj:[],pnj:[],merc:[],proj:[],miss:[]});
-const DEF=()=>({mcss:MCSS,width:960,goal:0,banner:OBITO,kj:'戦争',title:'',sub:'Round 1 — En cours',foot:'',css:CSS,camps:[camp('Mizu no Kuni',LM,'#45c4d6',13),camp('Clan Kaguya',LK,'#d64545',10)],rounds:[{t:'Round 1',d:''}]});
-let S=DEF();try{const o=JSON.parse(localStorage.getItem(KEY));if(o&&o.camps&&o.camps.length==2)S=Object.assign(DEF(),o)}catch(e){}
+const DEF=()=>({mcss:MCSS,width:1100,goal:0,banner:OBITO,kj:'戦争',title:'',sub:'Round 1 — En cours',foot:'',css:CSS,camps:[camp('Mizu no Kuni',LM,'#45c4d6',13),camp('Clan Kaguya',LK,'#d64545',10)],rounds:[{t:'Round 1',d:''}]});
+let S=DEF();try{const o=JSON.parse(localStorage.getItem(KEY));if(o&&o.camps&&o.camps.length==2){S=Object.assign(DEF(),o);if(!(+S.width>960))S.width=1100}}catch(e){}
 const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),1900)};
 const rgb=h=>{h=(h||'#000000').replace('#','');return [0,2,4].map(i=>parseInt(h.substr(i,2),16)||0).join(', ')};
 
@@ -108,7 +108,7 @@ const prof=(o,c)=>{const [l,col]=ST[o.st]||ST.actif,
 const proj=(o,c)=>{const p=Math.min(100,Math.round((+o.cur||0)/Math.max(+o.max||0,1)*100));
  return `<div style="${BOX(c.color)}"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span class="tpc-name" style="font-size:17px">${E(o.n)||'Sans nom'}</span><span style="${CIN}font-size:13px;letter-spacing:.1em;color:${c.color};white-space:nowrap">${+o.cur||0} / ${+o.max||0} PP</span></div><div style="height:8px;margin-top:8px;background:var(--sg-ink-800);border:1px solid var(--sg-ink-700)"><div style="width:${p}%;height:100%;background:${c.color}"></div></div>${o.d?`<div style="${DSC};margin-top:9px">${fm(o.d)}</div>`:''}</div>`};
 const miss=(o,c)=>{const [l,col]=MS[o.st]||MS.cours,rg=o.rang||'C',u=/^https?:\/\//i.test((o.url||'').trim())?o.url.trim():'';
- return `<div class="encadre" data-rang="${A(rg)}"${o.st&&o.st!='cours'?' style="opacity:.7"':''}><div class="encadre_titre"><div class="rang_miss">${E(rg)}</div><span>${E(o.n)||'Sans nom'}</span>${o.who?`<i>${E(o.who)}</i>`:''}</div>${o.txt!==false&&o.d?`<p style="color: #c9bfa3;">${fm(o.d)}</p>`:''}<div class="bas_miss"><div class="content_rec">${o.rec?`<div class="rec_miss">Récompense:</div>${E(o.rec)}`:''}</div><div style="display:flex;align-items:center;gap:12px">${u?`<a href="${A(u)}" target="_blank" rel="noopener" style="display:inline-block;padding:3px 12px;border:1px solid var(--sg-gold);color:var(--sg-gold);${CIN}font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none">Lire la mission</a>`:''}<div class="dispo_miss" data-rang="dispo" style="border-color:${col};color:${col}">${l}</div></div></div></div>`};
+ return `<div class="encadre" data-rang="${A(rg)}"${['fini','reussie','echouee'].includes(o.st)?' style="opacity:.7"':''}><div class="encadre_titre" style="flex-wrap:wrap;gap:6px 14px"><div class="rang_miss">${E(rg)}</div><span>${E(o.n)||'Sans nom'}</span>${o.who?`<i>${E(o.who)}</i>`:''}</div>${o.txt!==false&&o.d?`<p style="color: #c9bfa3;">${fm(o.d)}</p>`:''}<div class="bas_miss" style="flex-wrap:wrap;gap:10px"><div class="content_rec">${o.rec?`<div class="rec_miss">Récompense:</div>${E(o.rec)}`:''}</div><div style="display:flex;align-items:center;gap:12px">${u?`<a href="${A(u)}" target="_blank" rel="noopener" style="display:inline-block;padding:3px 12px;border:1px solid var(--sg-gold);color:var(--sg-gold);${CIN}font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none">Lire la mission</a>`:''}<div class="dispo_miss" data-rang="dispo" style="border-color:${col};color:${col}">${l}</div></div></div></div>`};
 const rnd=r=>{const li=r.d.split('\n').filter(x=>x.trim()).map(x=>`<div class="liste_item" style="font-size:18px"><div class="liste_puce"></div><div>${fm(x)}</div></div>`).join('')||'<div class="liste_item" style="font-size:17px"><div class="liste_puce"></div><div>À remplir</div></div>';
  return `<div class="encadre" style="padding:18px 24px;border-left:3px solid var(--sg-gold-soft)"><div class="encadre_titre" style="font-size:13px;letter-spacing:5px;margin-bottom:12px">${E(r.t)}</div><div class="liste_gen" style="font-style:normal;gap:10px">${li}</div></div>`};
 
@@ -130,7 +130,7 @@ function gen(mode){const [a,b]=S.camps,goal=+S.goal||0,W=+S.width||900;
  P.push(ban('Rapport de forces','戦況'),`<div style="display:flex;align-items:stretch;padding:26px 28px 30px">${pan(a)}<div style="flex:0 0 84px;display:flex;align-items:center;justify-content:center;${CIN}font-size:22px;color:var(--sg-gold)">VS</div>${pan(b)}</div>`);
  P.push(ban('Combattants','兵'),heads,...[['pj','PJ'],['pnj','PNJ'],['merc','Mercenaires']].map(([k,t])=>dv(t)+row(ls(a,k,prof),ls(b,k,prof))),gap(20));
  P.push(ban('Projets de guerre','策'),heads,gap(18),row(ls(a,'proj',proj),ls(b,'proj',proj)),gap(20));
- P.push(ban('Missions en cours','任務'),...[a,b].map(c=>`<div style="padding:24px 28px 4px"><div style="text-align:center;padding-bottom:10px;margin-bottom:16px;border-bottom:2px solid ${c.color};${CIN}font-size:17px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:${c.color}">${E(c.name)}</div>${ls(c,'miss',miss)}</div>`),gap(20));
+ P.push(ban('Missions en cours','任務'),heads,gap(18),row(ls(a,'miss',miss),ls(b,'miss',miss)),gap(20));
  P.push(ban('Chronique de la guerre','記録'),`<div style="display:flex;flex-direction:column;gap:16px;padding:26px 28px 30px">${S.rounds.map(rnd).join('')}</div>`);
  P.push(`<div class="pied_gen">${E(S.foot||'Sengoku no Jidai — Guerre : '+a.name+' & '+b.name)}</div>${mode=='pv'?'':'<!--WAR:'+enc(S)+'-->'}</div>`);
  return P.join('\n').replace(/>[ \t]*\n[ \t]*</g,'><!--\n--><')}
