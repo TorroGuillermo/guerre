@@ -12,12 +12,12 @@
 :root{--bg:#0a0908;--p:#110f0d;--p2:#17140f;--l:#2a251d;--t:#e8dfc9;--m:#9c9278;--g:#c9a558;--r:#c4503f}
 *{box-sizing:border-box}[hidden]{display:none!important}html{scrollbar-color:#3a3228 #0e0c09;scrollbar-width:thin}
 body{margin:0;color:var(--t);font:15px/1.5 'Inria Sans',system-ui,sans-serif;background:radial-gradient(ellipse 80% 40% at 50% 0,rgba(201,165,88,.08),transparent 70%),#0a0908;background-attachment:fixed}
-.app{max-width:1340px;margin:0 auto;padding:20px 14px 60px}
+.app{max-width:1700px;margin:0 auto;padding:20px 14px 60px}
 .top{text-align:center;margin-bottom:18px}.kj{font:13px 'Noto Serif JP',serif;letter-spacing:10px;color:#6e664f}
 h1{margin:8px 0 4px;font:700 26px 'Cinzel',serif;letter-spacing:.2em;text-transform:uppercase;background:linear-gradient(#f0d48a,#b08d3e);-webkit-background-clip:text;background-clip:text;color:transparent}
 .sub{margin:0;color:var(--m);font:italic 16px 'IM Fell English',serif}
 .bar2{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-.cols{display:grid;grid-template-columns:minmax(0,1fr) 800px;gap:18px;align-items:start}
+.cols{display:grid;grid-template-columns:168px minmax(0,1fr) clamp(460px,44vw,800px);gap:18px;align-items:start}
 .sec{background:linear-gradient(#131009,#0f0d0a);border:1px solid var(--l);border-left:3px solid var(--g);border-radius:4px;margin-bottom:16px;box-shadow:0 8px 28px rgba(0,0,0,.35)}
 .sec>h2,.sec>summary{margin:0;padding:11px 16px;background:linear-gradient(90deg,rgba(201,165,88,.11),transparent 70%),var(--p2);border-bottom:1px solid var(--l);font:600 12px 'Cinzel',serif;letter-spacing:.24em;text-transform:uppercase;color:var(--g);cursor:pointer;list-style:none}
 .b{padding:16px;display:flex;flex-direction:column;gap:12px}
@@ -43,6 +43,25 @@ textarea{resize:vertical;min-height:70px}input[type=color]{height:38px;padding:2
 #toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#17140f;border:1px solid var(--g);padding:10px 20px;border-radius:4px;font:600 11px 'Cinzel',serif;letter-spacing:.18em;text-transform:uppercase;opacity:0;pointer-events:none;transition:.3s;z-index:99}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 @media(max-width:1250px){.cols{grid-template-columns:1fr}.side{position:static;max-height:none}}
+
+html{scroll-behavior:smooth}
+.nav{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;background:var(--p);border:1px solid var(--l);border-top:2px solid var(--g);border-radius:4px;padding:6px 0 10px;scrollbar-width:thin;box-shadow:0 10px 32px rgba(0,0,0,.45)}
+.nav a{display:flex;justify-content:space-between;align-items:baseline;gap:6px;padding:6px 12px;color:var(--m);text-decoration:none;font:600 10px 'Cinzel',serif;letter-spacing:.14em;text-transform:uppercase;border-left:2px solid transparent;transition:color .15s,background .15s}
+.nav a:hover{color:var(--t);background:rgba(201,165,88,.06)}
+.nav a.cn{margin-top:8px;padding-top:10px;border-top:1px solid var(--l);color:var(--nc,var(--g));font-size:11px}
+.nav a.s{padding-left:24px;font:400 13px 'Inria Sans',sans-serif;letter-spacing:0;text-transform:none}
+.nav a.on{color:var(--g);border-left-color:var(--nc,var(--g));background:rgba(201,165,88,.1)}
+.nav em{font-style:normal;color:var(--m);font-size:11px}
+.nav a.sd{margin-top:8px}
+.nav .nf{display:flex;flex-direction:column;gap:6px;padding:10px 10px 4px;margin-top:8px;border-top:1px solid var(--l)}
+.nav .nf .btn{width:100%;padding:7px 6px;font-size:9.5px;letter-spacing:.1em}
+#ed [id]{scroll-margin-top:14px}
+.cbody{display:flex;flex-direction:column;gap:10px}
+.cbody[hidden]{display:none}
+.ch b{cursor:pointer}
+.ch .x.tg{border-color:transparent;padding:6px 8px}
+.ch .x{padding:6px 8px}
+@media(max-width:1250px){.nav{top:0;z-index:30;display:flex;max-height:none;overflow-x:auto;overflow-y:hidden;padding:0;border-radius:0;margin:0 -14px 14px}.nav a{white-space:nowrap;border-left:0;border-bottom:2px solid transparent;padding:10px 14px}.nav a.s,.nav .nf{display:none}.nav a.cn{margin:0;border-top:0}.nav a.sd{margin:0}.nav a.on{border-bottom-color:var(--nc,var(--g))}#ed [id]{scroll-margin-top:64px}}
 </style>
 <style id="gwcss">
 /* =========================================================
@@ -165,8 +184,9 @@ textarea{resize:vertical;min-height:70px}input[type=color]{height:38px;padding:2
     <textarea id="dt" style="min-height:110px"></textarea>
     <div class="tools"><button class="btn" id="dtcp">Copier mes données</button><button class="btn o" id="dtld">Charger ces données</button></div></div></div>
   <div class="cols">
+    <nav class="nav" id="nav" aria-label="Navigation"></nav>
     <div class="main" id="ed"></div>
-    <aside class="side"><div class="tabs"><button class="on" data-v="pv">Aperçu</button><button data-v="cd">Code</button></div>
+    <aside class="side" id="side"><div class="tabs"><button class="on" data-v="pv">Aperçu</button><button data-v="cd">Code</button></div>
       <div class="view" id="v-pv"><div class="pvw"><div id="pv"></div></div></div>
       <div class="view" id="v-cd" hidden><textarea id="code" readonly></textarea></div>
       <div class="acts"><button class="btn" id="cp" style="width:100%">Copier le code</button><p class="hint" id="sz" style="text-align:center;margin-top:8px"></p></div></aside>
@@ -271,14 +291,32 @@ const F=(pre,[k,l,ty,opt],o)=>{const p=pre?pre+'.'+k:k,v=o[k];
  if(ty=='area')return `<label class="f">${l}<textarea data-p="${p}">${E(v)}</textarea></label>`;
  if(ty=='sel')return `<label class="f">${l}<select data-p="${p}">${Object.entries(opt).map(([x,y])=>`<option value="${x}"${x==v?' selected':''}>${y[0]}</option>`).join('')}</select></label>`;
  return `<label class="f">${l}<input ${ty=='text'&&opt?`placeholder="${A(opt)}" `:''}${ty=='num'?'type="number" data-n ':ty=='col'?'type="color" ':''}data-p="${p}" value="${A(v)}"></label>`};
+
+/* ---------- envoyer / copier un cadre, navigation ---------- */
+const destOpts=(c,l)=>{const k=LISTS[l].k,ls=Object.keys(LISTS).filter(x=>LISTS[x].k==k),mk=pre=>S.camps.map((cp,ci)=>ls.map(x=>(ci==c&&x==l)?'':`<option value="${pre}:${ci}:${x}">${E(cp.name||'Camp '+(ci+1))} — ${LISTS[x].t}</option>`).join('')).join('');
+ return `<option value="">Déplacer / copier vers…</option><optgroup label="Déplacer vers">${mk('m')}</optgroup><optgroup label="Copier vers">${mk('c')}</optgroup>`};
+const copyTxt=async t=>{try{await navigator.clipboard.writeText(t);return true}catch(e){try{const a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();const ok=document.execCommand('copy');a.remove();return ok}catch(e2){return false}}};
+const cardCode=(ci,l,i)=>{const cp=S.camps[ci],o=cp[l][i],k=LISTS[l].k,f={prof,proj,miss}[k],v=ci?'cb':'ca',lk=u=>`<link rel="stylesheet" href="${A(String(u).replace(/&amp;/g,'&'))}">`;
+ return lk(S.css)+(k=='miss'?lk(S.mcss||MCSS):'')+lk(S.gcss||GCSS)+`<div class="gw ${ci?'gw_b':'gw_a'}" style="--${v}:${cp.color};--${v}-rgb:${rgb(cp.color)};max-width:620px;margin:auto">${f(o)}</div>`};
+let navSig='';
+function renderNav(){const sig=JSON.stringify([S.camps.map(c=>[c.name,c.color,...Object.keys(LISTS).map(k=>c[k].length)]),S.rounds.map(r=>r.t)]);if(sig===navSig)return;navSig=sig;
+ const n=$('#nav'),st=n.scrollTop,L=(id,t,c,cls,col)=>`<a href="#${id}" data-s="${id}"${cls?` class="${cls}"`:''}${col?` style="--nc:${col}"`:''}>${E(t)}${c!=null?` <em>${c}</em>`:''}</a>`;
+ let h=L('s-gen','Général');
+ S.camps.forEach((c,ci)=>{h+=L('c'+ci,c.name||'Camp '+(ci+1),null,'cn',c.color)+Object.entries(LISTS).map(([k,x])=>L('c'+ci+'-'+k,x.t,c[k].length,'s',c.color)).join('')});
+ h+=L('s-rds','Chronique',S.rounds.length,'cn')+S.rounds.map((r,i)=>L('rd'+i,r.t||'Round '+(i+1),null,'s')).join('');
+ h+=`<a href="#side" class="sd">Aperçu &amp; code</a><div class="nf"><button class="btn o" data-a="fold" data-v="1">Tout replier</button><button class="btn o" data-a="fold" data-v="0">Tout déplier</button><button class="btn o" data-a="top">Haut de page</button></div>`;
+ n.innerHTML=h;n.scrollTop=st;spy()}
+function spy(){const n=$('#nav'),as=[...n.querySelectorAll('a[data-s]')];let cur=null;as.forEach(a=>{const t=document.getElementById(a.dataset.s);if(t&&a.dataset.s!='side'&&t.getBoundingClientRect().top<=150)cur=a});
+ as.forEach(a=>a.classList.toggle('on',a===cur));if(cur&&n.scrollHeight>n.clientHeight&&n.scrollWidth<=n.clientWidth+2){if(cur.offsetTop<n.scrollTop+40||cur.offsetTop>n.scrollTop+n.clientHeight-60)n.scrollTop=Math.max(0,cur.offsetTop-80)}}
+window.addEventListener('scroll',()=>{cancelAnimationFrame(spy.r);spy.r=requestAnimationFrame(spy)},{passive:true});
 const lnkUI=i=>`<div class="g" style="align-items:end"><label class="f">Mot cliquable (ou sélectionne-le dans le texte)<input class="lw" placeholder="ici"></label><label class="f">Lien du sujet RP<input class="lu" placeholder="https://…"></label><button class="btn o" data-a="lnk" data-c="r" data-l="r" data-i="${i}">Lier le mot</button></div>`;
-const item=(c,l,i,o,fs)=>{const p=c=='r'?`rounds.${i}`:`camps.${c}.${l}.${i}`,at=`data-c="${c}" data-l="${l}" data-i="${i}"`;
- return `<div class="card"><div class="ch"><b>${E(o.n||o.t||'Nouveau')}</b>${l=='miss'?`<button class="x" data-a="mv" title="Assigner à l'autre camp" ${at}>⇄</button>`:''}<button class="x" data-a="dup" title="Dupliquer" ${at}>⧉</button><button class="x" data-a="up" ${at}>↑</button><button class="x" data-a="dn" ${at}>↓</button><button class="x" data-a="del" ${at}>✕</button></div><div class="g">${fs.map(f=>F(p,f,o)).join('')}</div>${c=='r'?lnkUI(i):''}</div>`};
-const campUI=(c,ci)=>`<div class="sec" style="border-left-color:${c.color}"><h2 style="color:${c.color}">${E(c.name)}</h2><div class="b"><div class="g">${[['name','Nom du camp','text'],['color','Couleur','col'],['pv','Points de victoire','num']].map(f=>F('camps.'+ci,f,c)).join('')}</div>${F('camps.'+ci,['logo','Logo (lien)','text'],c)}`
- +Object.entries(LISTS).map(([k,L])=>`<div class="lh"><b>${L.t} (${c[k].length})</b><span class="tools">${k=='miss'?`<button class="btn o" data-a="mtog" data-c="${ci}" data-l="miss">Importer un code</button>`:''}<button class="btn o" data-a="add" data-c="${ci}" data-l="${k}">+ Ajouter</button></span></div>${k=='miss'?`<div id="mimp${ci}" class="card" hidden><p class="hint">Colle le code d'une ou plusieurs missions (les blocs « encadre »). Chaque mission trouvée est ajoutée à ce camp avec son rang, son titre, son donneur, son texte et sa récompense.</p><textarea id="mimpta${ci}" style="min-height:120px"></textarea><div class="tools"><button class="btn" data-a="mimp" data-c="${ci}" data-l="miss">Ajouter ces missions</button></div></div>`:''}${c[k].map((o,i)=>item(ci,k,i,o,FIELDS[L.k])).join('')}`).join('')+'</div></div>';
-function renderEd(){$('#ed').innerHTML=`<div class="sec"><h2>Général</h2><div class="b"><div class="g">${F('',['title','Titre (vide = noms des camps)','text'],S)}${F('',['sub','Sous-titre / round en cours','text'],S)}${F('',['kj','Kanji d\'en-tête','text'],S)}${F('',['width','Largeur de la fiche (px)','num'],S)}${F('',['goal','Objectif de points (0 = pas de barre)','num'],S)}</div>${F('',['banner','Image de bannière (lien)','text'],S)}${F('',['foot','Pied de page (vide = automatique)','text'],S)}</div></div>`
+const item=(c,l,i,o,fs)=>{const p=c=='r'?`rounds.${i}`:`camps.${c}.${l}.${i}`,at=`data-c="${c}" data-l="${l}" data-i="${i}"`,r=c=='r',cl=!!o._c;
+ return `<div class="card"${r?` id="rd${i}"`:''}><div class="ch"><button class="x tg" data-a="tg" ${at} title="Replier / déplier">${cl?'▸':'▾'}</button><b data-a="tg" ${at}>${E(o.n||o.t||'Nouveau')}</b>${r?'':`<button class="x" data-a="mv" title="Passer dans l'autre camp" ${at}>⇄</button><button class="x" data-a="code" title="Copier le code de ce cadre (à coller sur le forum)" ${at}>⎘</button>`}<button class="x" data-a="dup" title="Dupliquer" ${at}>⧉</button><button class="x" data-a="up" ${at}>↑</button><button class="x" data-a="dn" ${at}>↓</button><button class="x" data-a="del" ${at}>✕</button></div><div class="cbody"${cl?' hidden':''}><div class="g">${fs.map(f=>F(p,f,o)).join('')}</div>${r?lnkUI(i):`<label class="f">Envoyer vers un autre camp ou une autre liste<select data-send ${at}>${destOpts(+c,l)}</select></label>`}</div></div>`};
+const campUI=(c,ci)=>`<div class="sec" id="c${ci}" style="border-left-color:${c.color}"><h2 style="color:${c.color}">${E(c.name)}</h2><div class="b"><div class="g">${[['name','Nom du camp','text'],['color','Couleur','col'],['pv','Points de victoire','num']].map(f=>F('camps.'+ci,f,c)).join('')}</div>${F('camps.'+ci,['logo','Logo (lien)','text'],c)}`
+ +Object.entries(LISTS).map(([k,L])=>`<div class="lh" id="c${ci}-${k}"><b>${L.t} (${c[k].length})</b><span class="tools"><button class="btn o" data-a="lfold" data-c="${ci}" data-l="${k}">${c[k].length&&c[k].every(x=>x._c)?'Déplier':'Replier'}</button>${k=='miss'?`<button class="btn o" data-a="mtog" data-c="${ci}" data-l="miss">Importer un code</button>`:''}<button class="btn o" data-a="add" data-c="${ci}" data-l="${k}">+ Ajouter</button></span></div>${k=='miss'?`<div id="mimp${ci}" class="card" hidden><p class="hint">Colle le code d'une ou plusieurs missions (les blocs « encadre »). Chaque mission trouvée est ajoutée à ce camp avec son rang, son titre, son donneur, son texte et sa récompense.</p><textarea id="mimpta${ci}" style="min-height:120px"></textarea><div class="tools"><button class="btn" data-a="mimp" data-c="${ci}" data-l="miss">Ajouter ces missions</button></div></div>`:''}${c[k].map((o,i)=>item(ci,k,i,o,FIELDS[L.k])).join('')}`).join('')+'</div></div>';
+function renderEd(){$('#ed').innerHTML=`<div class="sec" id="s-gen"><h2>Général</h2><div class="b"><div class="g">${F('',['title','Titre (vide = noms des camps)','text'],S)}${F('',['sub','Sous-titre / round en cours','text'],S)}${F('',['kj','Kanji d\'en-tête','text'],S)}${F('',['width','Largeur de la fiche (px)','num'],S)}${F('',['goal','Objectif de points (0 = pas de barre)','num'],S)}</div>${F('',['banner','Image de bannière (lien)','text'],S)}${F('',['foot','Pied de page (vide = automatique)','text'],S)}</div></div>`
  +S.camps.map(campUI).join('')
- +`<div class="sec"><h2>Chronique des rounds</h2><div class="b"><p class="hint">Lier un sujet RP à un mot : sélectionne le mot dans le texte, colle le lien du sujet, clique sur « Lier le mot ». Tu peux aussi écrire directement [mot](https://lien) dans n'importe quel texte.</p>${S.rounds.map((r,i)=>item('r','r',i,r,FIELDS.rnd)).join('')}<div class="tools"><button class="btn o" data-a="add" data-c="r" data-l="r">+ Ajouter un round</button></div></div></div>`
+ +`<div class="sec" id="s-rds"><h2>Chronique des rounds</h2><div class="b"><p class="hint">Lier un sujet RP à un mot : sélectionne le mot dans le texte, colle le lien du sujet, clique sur « Lier le mot ». Tu peux aussi écrire directement [mot](https://lien) dans n'importe quel texte.</p>${S.rounds.map((r,i)=>item('r','r',i,r,FIELDS.rnd)).join('')}<div class="tools"><button class="btn o" data-a="add" data-c="r" data-l="r">+ Ajouter un round</button><button class="btn o" data-a="lfold" data-c="r" data-l="r">Replier / déplier</button></div></div></div>`
  +`<details class="sec"><summary>Réglages avancés</summary><div class="b">${F('',['css','Lien du CSS des fiches','text'],S)}${F('',['mcss','Lien du CSS des missions','text'],S)}${F('',['gcss','Lien du CSS de la guerre (guerre_snj.css)','text'],S)}</div></details>`}
 function parseMiss(src){const d=new DOMParser().parseFromString(src,'text/html');
  return [...d.querySelectorAll('.encadre')].map(e=>{const T=q=>{const x=e.querySelector(q);return x?x.textContent.trim():''};let rec='';const cr=e.querySelector('.content_rec');
@@ -287,20 +325,30 @@ function parseMiss(src){const d=new DOMParser().parseFromString(src,'text/html')
 const setP=(p,v)=>{const k=p.split('.'),l=k.pop();k.reduce((o,x)=>o[x],S)[l]=v};
 let pvT,last='';const fit=()=>{const W=(+S.width||900)+30,w=$('.pvw').clientWidth-16;$('#pv').style.width=W+'px';if(w>0)$('#pv').style.zoom=Math.max(.3,Math.min(1,w/W))};
 function pvUpd(){const h=gen('pv');if(h!==last){last=h;$('#pv').innerHTML=h}fit()}
-function upd(){const cd=gen('code');$('#code').value=cd;$('#sz').textContent='Taille du code : '+cd.length.toLocaleString('fr-FR')+' caractères';clearTimeout(pvT);pvT=setTimeout(pvUpd,300);try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function upd(){renderNav();const cd=gen('code');$('#code').value=cd;$('#sz').textContent='Taille du code : '+cd.length.toLocaleString('fr-FR')+' caractères';clearTimeout(pvT);pvT=setTimeout(pvUpd,300);try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const render=()=>{renderEd();upd()};
 document.addEventListener('input',e=>{const t=e.target,p=t.dataset.p;if(!p)return;setP(p,t.type=='checkbox'?t.checked:t.hasAttribute('data-n')?+t.value:t.value);
  if(/\.(n|t)$/.test(p)){const b=t.closest('.card');if(b)b.querySelector('.ch b').textContent=t.value||'Nouveau'}upd()});
-document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const{a,c,l}=b.dataset,i=+b.dataset.i,R=c=='r'?S.rounds:(S.camps[+c]||{})[l];
+document.addEventListener('click',e=>{const nl=e.target.closest('#nav a[href^="#"]');if(nl){e.preventDefault();const t=document.getElementById(nl.getAttribute('href').slice(1));if(t)t.scrollIntoView({behavior:'smooth',block:'start'});return}
+ const b=e.target.closest('[data-a]');if(!b)return;const{a,c,l}=b.dataset,i=+b.dataset.i,R=c=='r'?S.rounds:(S.camps[+c]||{})[l];
  if(a=='mtog'){const bx=$('#mimp'+c);bx.hidden=!bx.hidden;return}
  if(a=='mimp'){const ms=parseMiss($('#mimpta'+c).value);if(!ms.length){toast('Aucune mission reconnue dans ce code');return}S.camps[+c].miss.push(...ms);render();toast(ms.length+' mission(s) ajoutée(s)');return}
- if(a=='mv'){const t=S.camps[1-(+c)];t.miss.push(R.splice(i,1)[0]);render();toast('Mission assignée : '+t.name);return}
+ if(a=='mv'){const t=S.camps[1-(+c)],nm=R[i].n||'Sans nom';t[l].push(R.splice(i,1)[0]);render();toast(nm+' → '+t.name);return}
+ if(a=='tg'){R[i]._c=!R[i]._c;render();return}
+ if(a=='lfold'){const all=R.length&&R.every(x=>x._c);R.forEach(x=>x._c=!all);render();return}
+ if(a=='fold'){const v=b.dataset.v=='1';S.camps.forEach(cp=>Object.keys(LISTS).forEach(k=>cp[k].forEach(x=>x._c=v)));S.rounds.forEach(x=>x._c=v);render();return}
+ if(a=='top'){window.scrollTo({top:0,behavior:'smooth'});return}
+ if(a=='code'){copyTxt(cardCode(+c,l,i)).then(ok=>toast(ok?'Code du cadre copié : colle-le dans ton message':'Copie impossible'));return}
  if(a=='lnk'){const cd=b.closest('.card'),ta=cd.querySelector('textarea'),wi=cd.querySelector('.lw'),ui=cd.querySelector('.lu'),s0=ta.selectionStart,s1=ta.selectionEnd,w=wi.value.trim()||ta.value.slice(s0,s1),u=ui.value.trim();
  if(!w||!u){toast('Il faut un mot et un lien');return}
  ta.value=ta.value.slice(0,s0)+`[${w}](${u})`+ta.value.slice(s1);R[i].d=ta.value;wi.value='';ui.value='';upd();toast('Lien inséré');return}
  if(a=='dup')R.splice(i+1,0,JSON.parse(JSON.stringify(R[i])));
  if(a=='add')c=='r'?R.push({t:'Round '+(R.length+1),d:''}):R.push(NEW[LISTS[l].k]());
  if(a=='del')R.splice(i,1);if(a=='up'&&i>0)R.splice(i-1,0,R.splice(i,1)[0]);if(a=='dn'&&i<R.length-1)R.splice(i+1,0,R.splice(i,1)[0]);render()});
+document.addEventListener('change',e=>{const t=e.target;if(!t.matches||!t.matches('select[data-send]')||!t.value)return;
+ const [m,c2,l2]=t.value.split(':'),src=S.camps[+t.dataset.c][t.dataset.l],i=+t.dataset.i,it=src[i],dst=S.camps[+c2],nm=it.n||'Sans nom';
+ if(m=='m'){src.splice(i,1);dst[l2].push(it)}else dst[l2].push(JSON.parse(JSON.stringify(it)));
+ render();toast((m=='m'?'Déplacé : ':'Copié : ')+nm+' → '+dst.name+' — '+LISTS[l2].t)});
 document.querySelectorAll('.tabs [data-v]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs [data-v]').forEach(x=>x.classList.toggle('on',x==b));$('#v-pv').hidden=b.dataset.v!='pv';$('#v-cd').hidden=b.dataset.v!='cd';if(b.dataset.v=='pv')pvUpd()});
 window.addEventListener('resize',fit);
 $('#im').onclick=()=>{$('#imbox').hidden=!$('#imbox').hidden;$('#imerr').hidden=true};
